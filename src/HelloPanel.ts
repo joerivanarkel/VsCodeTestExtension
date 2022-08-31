@@ -28,7 +28,7 @@ export class HelloPanel {
     // Otherwise, create a new panel.
     const panel = vscode.window.createWebviewPanel(
       HelloPanel.viewType,
-      "VSinder",
+      "testextension",
       column || vscode.ViewColumn.One,
       {
         // Enable javascript in the webview

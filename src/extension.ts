@@ -1,12 +1,45 @@
 import * as vscode from 'vscode';
 import { HelloPanel } from './HelloPanel';
+import { SidebarProvider } from './SidebarProvider';
 
 export function activate(context: vscode.ExtensionContext) {
-	console.log('Congratulations, your extension "testextension" is now active!');
+	const sidebarProvider = new SidebarProvider(context.extensionUri);
 
+	const item = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right);
+	item.text = "$(beaker) Add Todo";
+	item.command = "testextension.addtodo";
+	item.show();
+
+	context.subscriptions.push(
+		vscode.window.registerWebviewViewProvider(
+			"testextension-sidebar",
+			sidebarProvider
+		)
+	);
+	
 	context.subscriptions.push(
 		vscode.commands.registerCommand('testextension.helloWorld', () => {
 			HelloPanel.createOrShow(context.extensionUri);
+		})
+	);
+
+	context.subscriptions.push(
+		vscode.commands.registerCommand('testextension.addtodo', () => {
+			const {activeTextEditor} = vscode.window;
+
+			if(!activeTextEditor)
+			{
+				vscode.window.showInformationMessage("Please select something for this to work.");
+				return;
+			}
+
+			const text = activeTextEditor.document.getText(activeTextEditor.selection);
+			vscode.window.showInformationMessage("Text:" + text);
+
+			sidebarProvider._view?.webview.postMessage({
+				type: 'new-todo',
+				value: text,
+			});
 		})
 	);
 
@@ -44,6 +77,8 @@ export function activate(context: vscode.ExtensionContext) {
 			}
 		})
 	);
+
+	
 }
 export function deactivate() {}
 

@@ -4,6 +4,7 @@ import commonjs from "@rollup/plugin-commonjs";
 import { terser } from "rollup-plugin-terser";
 import sveltePreprocess from "svelte-preprocess";
 import typescript from "@rollup/plugin-typescript";
+import css from "rollup-plugin-css-only";
 import path from "path";
 import fs from "fs";
 
@@ -27,12 +28,15 @@ export default fs
           dev: !production,
           // we'll extract any component CSS out into
           // a separate file - better for performance
-          css: (css) => {
-            css.write(name + ".css");
-          },
+          // css: (css) => {
+          //   css.write(name + ".css");
+          // },
+          emitCss: true,
           preprocess: sveltePreprocess(),
         }),
-
+        css({ 
+          output: name + ".css" 
+        }),
         // If you have external dependencies installed from
         // npm, you'll most likely need these plugins. In
         // some cases you'll need additional configuration -
